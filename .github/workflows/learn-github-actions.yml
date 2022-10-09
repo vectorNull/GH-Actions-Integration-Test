@@ -1,13 +1,25 @@
-name: learn-github-actions
-run-name: ${{ github.actor }} is learning GitHub Actions
+name: dotnet package
+
 on: [push]
+
 jobs:
-  check-bats-version:
+  build:
+
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+
+      - name: Setup .NET Core SDK 6.x
+        uses: actions/setup-dotnet@v3
         with:
-          node-version: '14'
-      - run: npm install -g bats
-      - run: bats -v   
+          dotnet-version: '6.x'
+
+      - name: Install dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+        
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal
